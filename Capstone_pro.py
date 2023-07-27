@@ -3,7 +3,6 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
 import os
-
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
     label_encoder = LabelEncoder()
