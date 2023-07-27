@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
-import requests
+import gdown
+import os
 
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
@@ -20,20 +21,23 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_url = "https://drive.google.com/drive/my-drive"
+    model_file = 'best_model.pkl'
 
-    # Download the model file from Google Drive
-    try:
-        response = requests.get(model_url)
-        with open('best_model.pkl', 'wb') as f:
-            f.write(response.content)
-    except Exception as e:
-        st.error(f"Error downloading the model: {e}")
-        return
+    # Check if the model file exists in the same directory
+    if not os.path.exists(model_file):
+        # Provide the Google Drive link for best_model.pkl
+        model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
+
+        # Download the model file from Google Drive using gdown
+        try:
+            gdown.download(model_url, model_file, quiet=False)
+        except Exception as e:
+            st.error(f"Error downloading the model: {e}")
+            return
 
     try:
         # Load the saved model
-        loaded_model = joblib.load('best_model.pkl')
+        loaded_model = joblib.load(model_file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
@@ -71,4 +75,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
