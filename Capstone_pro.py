@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 from sklearn.preprocessing import LabelEncoder
 import os
 
@@ -30,11 +30,11 @@ def main():
 
     try:
         # Load the saved model
-        loaded_model = joblib.load(model_file)
+        with open(model_file, 'rb') as file:
+            loaded_model = pickle.load(file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
-
 
     # Create a form for user input
     st.subheader('Enter Car Details')
@@ -66,6 +66,6 @@ def main():
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
     st.write(f'₹ {predictions[0]:,.2f}')
-
+    
 if __name__ == '__main__':
     main()
