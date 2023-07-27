@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
 import os
+
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
     label_encoder = LabelEncoder()
@@ -65,10 +66,6 @@ def main():
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
     st.write(f'₹ {predictions[0]:,.2f}')
-    
-    # Create a form for user input
-    st.subheader('Enter Car Details')
-
 
 if __name__ == '__main__':
     main()
