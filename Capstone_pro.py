@@ -2,14 +2,13 @@ import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
-import requests
 import gdown
-
 
 # Define a function to download the model file from Google Drive using gdown
 def download_model():
     model_file = 'best_model.pkl'
-    model_url ="https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
+    model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
+
 
     try:
         gdown.download(model_url, output=model_file, quiet=False)
@@ -35,20 +34,15 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
-
     # Download the model file from Google Drive
-    try:
-        response = requests.get(model_url, verify=False)
-        with open('best_model.pkl', 'wb') as f:
-            f.write(response.content)
-    except Exception as e:
-        st.error(f"Error downloading the model: {e}")
+    model_file = download_model()
+
+    if model_file is None:
         return
 
     try:
         # Load the saved model
-        loaded_model = joblib.load('best_model.pkl')
+        loaded_model = joblib.load(model_file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
