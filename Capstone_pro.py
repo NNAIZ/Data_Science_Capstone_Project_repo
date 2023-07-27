@@ -3,6 +3,21 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
 import requests
+import gdown
+
+
+# Define a function to download the model file from Google Drive using gdown
+def download_model():
+    model_file = 'best_model.pkl'
+    model_url ="https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
+
+    try:
+        gdown.download(model_url, output=model_file, quiet=False)
+    except Exception as e:
+        st.error(f"Error downloading the model: {e}")
+        return None
+
+    return model_file
 
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
