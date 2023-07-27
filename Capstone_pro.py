@@ -33,7 +33,7 @@ def main():
 
     try:
         # Load the saved model
-        loaded_model = joblib.load('best_model.pkl')
+        loaded_model = joblib.load('best_model(3).pkl')
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
