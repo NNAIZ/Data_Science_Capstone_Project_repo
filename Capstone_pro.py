@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
-import pickle
+import joblib
 from sklearn.preprocessing import LabelEncoder
-import os
+import requests
 
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
@@ -20,18 +20,20 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_file = 'best_model.pkl'
-    
-    # Check if the model file exists in the same directory
-    if not os.path.exists(model_file):
-        st.error(f"Model file '{model_file}' not found in the same directory. "
-                 f"Please make sure the model file is in the same directory as this script.")
+    model_url = "https://drive.google.com/drive/my-drive"
+
+    # Download the model file from Google Drive
+    try:
+        response = requests.get(model_url)
+        with open('best_model.pkl', 'wb') as f:
+            f.write(response.content)
+    except Exception as e:
+        st.error(f"Error downloading the model: {e}")
         return
 
     try:
         # Load the saved model
-        with open(model_file, 'rb') as file:
-            loaded_model = pickle.load(file)
+        loaded_model = joblib.load('best_model.pkl')
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
@@ -66,6 +68,7 @@ def main():
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
     st.write(f'₹ {predictions[0]:,.2f}')
-    
+
 if __name__ == '__main__':
     main()
+
