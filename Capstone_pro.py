@@ -20,7 +20,7 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_url = "PASTE_YOUR_GOOGLE_DRIVE_LINK_HERE"
+    model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
 
     # Download the model file from Google Drive
     try:
