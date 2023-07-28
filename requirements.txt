@@ -2,6 +2,7 @@ streamlit==1.25.0
 numpy
 pandas
 scikit-learn
+gdown
 
 
 
