@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import requests
+import os
 
 # Function to download the model file from Google Drive
 def download_model(file_url):
@@ -14,8 +15,14 @@ def download_model(file_url):
 file_url = 'https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy'
 download_model(file_url)
 
+# Get the current working directory
+current_dir = os.getcwd()
+
+# Construct the full file path to the model file
+model_file_path = os.path.join(current_dir, 'best_model.pkl')
+
 # Load the saved model
-loaded_model = joblib.load('best_model.pkl')
+loaded_model = joblib.load(model_file_path)
 
 # Function to preprocess the data
 def preprocess_data(data):
