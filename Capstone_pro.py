@@ -1,55 +1,62 @@
 import streamlit as st
-import joblib
 import pandas as pd
+import joblib
 from sklearn.preprocessing import LabelEncoder
-import requests
-import os
+import gdown
 
-# Function to download the model file from Google Drive
-def download_model(file_url):
-    req = requests.get(file_url)
-    with open('best_model.pkl', 'wb') as file:
-        file.write(req.content)
+# Define a function to download the model file from Google Drive using gdown
+def download_model():
+    model_file = 'best_model.pkl'
+    model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
 
-# Download the model file from the provided link
-file_url = 'https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy'
-download_model(file_url)
+    try:
+        gdown.download(model_url, output=model_file, quiet=False)
+    except Exception as e:
+        st.error(f"Error downloading the model: {e}")
+        return None
 
-# Get the current working directory
-current_dir = os.getcwd()
+    return model_file
 
-# Construct the full file path to the model file
-model_file_path = os.path.join(current_dir, 'best_model.pkl')
-
-# Load the saved model
-loaded_model = joblib.load(model_file_path)
-
-# Function to preprocess the data
-def preprocess_data(data):
-    # Create an instance of LabelEncoder
+# Define a function to preprocess new data
+def preprocess_new_data(new_data):
     label_encoder = LabelEncoder()
 
-    # Apply label encoding to the categorical columns
+    # Apply label encoding to the categorical columns in new_data
     categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
-    for column in categorical_columns:
-        data[column] = label_encoder.fit_transform(data[column])
-    return data
 
-# Main function to run the Streamlit app
+    for column in categorical_columns:
+        new_data[column] = label_encoder.fit_transform(new_data[column])
+
+    return new_data
+
+# Define the Streamlit app
 def main():
     st.title('Car Price Prediction')
 
-    # Create a form to input new data
-    st.subheader('Enter Car Details')
-    name = st.text_input('Car Model:')
-    year = st.number_input('Year:', 2000, 2023, step=1)
-    km_driven = st.number_input('Kilometers Driven:')
-    fuel = st.selectbox('Fuel Type:', ['Petrol', 'Diesel'])
-    seller_type = st.selectbox('Seller Type:', ['Individual', 'Dealer'])
-    transmission = st.selectbox('Transmission:', ['Manual', 'Automatic'])
-    owner = st.selectbox('Owner:', ['First Owner', 'Second Owner', 'Third Owner'])
+    # Download the model file from Google Drive
+    model_file = download_model()
 
-    # Create a DataFrame with the input data
+    if model_file is None:
+        return
+
+    try:
+        # Load the saved model
+        loaded_model = joblib.load(model_file)
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
+        return
+
+    # Create a form for user input
+    st.subheader('Enter Car Details')
+    name = st.text_input('Car Name', 'Maruti 800 AC')
+    year = st.number_input('Year of Manufacture', 2000, 2023, 2007)
+    km_driven = st.number_input('Kilometers Driven', 0, 1000000, 70000)
+    fuel = st.selectbox('Fuel Type', ['Petrol', 'Diesel'])
+    seller_type = st.selectbox('Seller Type', ['Individual', 'Dealer', 'Trustmark Dealer'])
+    transmission = st.selectbox('Transmission', ['Manual', 'Automatic'])
+    owner = st.selectbox('Owner', ['First Owner', 'Second Owner', 'Third Owner', 'Fourth & Above Owner'])
+
+    # Create a DataFrame with the user input
     new_data = pd.DataFrame({
         'name': [name],
         'year': [year],
@@ -61,13 +68,14 @@ def main():
     })
 
     # Preprocess the new data
-    new_data = preprocess_data(new_data)
+    new_data_encoded = preprocess_new_data(new_data)
 
-    # Make predictions using the loaded model
-    prediction = loaded_model.predict(new_data)
-    st.subheader('Predicted Selling Price:')
-    st.write(f"${prediction[0]:,.2f}")
+    # Use the loaded model to make predictions on the new data
+    predictions = loaded_model.predict(new_data_encoded)
 
-# Run the app
+    # Display the predicted selling price
+    st.subheader('Predicted Selling Price')
+    st.write(f'₹ {predictions[0]:,.2f}')
+
 if __name__ == '__main__':
     main()
