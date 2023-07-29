@@ -1,21 +1,8 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 from sklearn.preprocessing import LabelEncoder
-import gdown
-
-# Define a function to download the model file from Google Drive using gdown
-def download_model():
-    model_file = 'best_model.pkl'
-    model_url = "https://drive.google.com/open?id=10KpJDZvQECn5DZhd_NiHuGuLHpdCpL3n&usp=drive_copy"
-
-    try:
-        gdown.download(model_url, output=model_file, quiet=False)
-    except Exception as e:
-        st.error(f"Error downloading the model: {e}")
-        return None
-
-    return model_file
+import os
 
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
@@ -33,15 +20,18 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    # Download the model file from Google Drive
-    model_file = download_model()
+    model_file = 'best_model.pkl'
 
-    if model_file is None:
+    # Check if the model file exists in the same directory
+    if not os.path.exists(model_file):
+        st.error(f"Model file '{model_file}' not found in the same directory. "
+                 f"Please make sure the model file is in the same directory as this script.")
         return
 
     try:
         # Load the saved model
-        loaded_model = joblib.load(model_file)
+        with open(model_file, 'rb') as file:
+            loaded_model = pickle.load(file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
@@ -79,3 +69,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
