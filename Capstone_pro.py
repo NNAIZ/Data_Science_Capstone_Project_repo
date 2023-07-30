@@ -1,18 +1,19 @@
 import streamlit as st
 import pandas as pd
 import pickle
-from sklearn.preprocessing import LabelEncoder
 import os
+from sklearn.preprocessing import LabelEncoder
 
 # Define a function to preprocess new data
-def preprocess_new_data(new_data):
-    label_encoder = LabelEncoder()
-
+def preprocess_new_data(new_data, label_encoder):
     # Apply label encoding to the categorical columns in new_data
     categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
 
-    for column in categorical_columns:
-        new_data[column] = label_encoder.fit_transform(new_data[column])
+    # Transform the categorical columns using label_encoder
+    transformed_data = label_encoder.transform(new_data[categorical_columns].values.ravel())
+
+    # Replace the categorical columns with the transformed values
+    new_data[categorical_columns] = transformed_data.reshape(new_data[categorical_columns].shape)
 
     return new_data
 
@@ -29,9 +30,13 @@ def main():
         return
 
     try:
-        # Load the saved model using pickle
+        # Load the saved model and preprocessing data using pickle
         with open(model_file, 'rb') as file:
-            loaded_model = pickle.load(file)
+            model_data = pickle.load(file)
+
+        # Extract the model and label encoder from the loaded data
+        loaded_model = model_data['model']
+        label_encoder = model_data['label_encoder']
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
@@ -57,8 +62,8 @@ def main():
         'owner': [owner]
     })
 
-    # Preprocess the new data
-    new_data_encoded = preprocess_new_data(new_data)
+    # Preprocess the new data using the label encoder from model_data
+    new_data_encoded = preprocess_new_data(new_data, label_encoder)
 
     if new_data_encoded is not None:
         # Use the loaded model to make predictions on the new data
