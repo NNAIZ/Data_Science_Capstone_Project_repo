@@ -12,7 +12,7 @@ def preprocess_new_data(new_data):
     categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
 
     for column in categorical_columns:
-        new_data[column] = label_encoder.fit_transform(new_data[column])
+        new_data[column] = label_encoder.fit_transform(new_data[column].iloc[0])
 
     return new_data
 
@@ -76,4 +76,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
