@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
 import os
+import traceback
 
 # Define a function to preprocess new data
 def preprocess_new_data(new_data):
@@ -33,6 +34,7 @@ def main():
         loaded_model = joblib.load(model_file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
+        traceback.print_exc()
         return
 
     # Create a form for user input
