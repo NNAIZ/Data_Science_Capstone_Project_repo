@@ -1,7 +1,20 @@
 import streamlit as st
 import pandas as pd
 import pickle
+from sklearn.preprocessing import LabelEncoder
 import os
+
+# Define a function to preprocess new data
+def preprocess_new_data(new_data):
+    label_encoder = LabelEncoder()
+
+    # Apply label encoding to the categorical columns in new_data
+    categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
+
+    for column in categorical_columns:
+        new_data[column] = label_encoder.fit_transform(new_data[column])
+
+    return new_data
 
 # Define the Streamlit app
 def main():
