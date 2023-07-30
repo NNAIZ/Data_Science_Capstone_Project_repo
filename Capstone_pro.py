@@ -1,27 +1,13 @@
 import streamlit as st
 import pandas as pd
-import joblib
-from sklearn.preprocessing import LabelEncoder
+import pickle
 import os
-import traceback
-
-# Define a function to preprocess new data
-def preprocess_new_data(new_data):
-    label_encoder = LabelEncoder()
-
-    # Apply label encoding to the categorical columns in new_data
-    categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
-
-    for column in categorical_columns:
-        new_data[column] = label_encoder.fit_transform(new_data[column])
-
-    return new_data
 
 # Define the Streamlit app
 def main():
     st.title('Car Price Prediction')
 
-    model_file = 'subset_data (1).json'  # Change the file extension to '.joblib'
+    model_file = 'best_model.pkl'
 
     # Check if the model file exists in the same directory
     if not os.path.exists(model_file):
@@ -30,11 +16,11 @@ def main():
         return
 
     try:
-        # Load the saved model using joblib
-        loaded_model = joblib.load(model_file)
+        # Load the saved model
+        with open(model_file, 'rb') as file:
+            loaded_model = pickle.load(file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
-        traceback.print_exc()
         return
 
     # Create a form for user input
@@ -66,9 +52,15 @@ def main():
 
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
-    st.write(f'₹ {predictions[0]:,.2f}')
+     st.write(f'₹ {predictions[0]:,.2f}')
+    if new_data_encoded is not None:
+        # Make predictions using the loaded model
+        predictions = loaded_model.predict(new_data_encoded)
+
+        # Display the predictions or do further processing
+        st.write('Predictions:', predictions)
+    else:
+        st.write("Please provide new data for prediction.")
 
 if __name__ == '__main__':
     main()
-
-
