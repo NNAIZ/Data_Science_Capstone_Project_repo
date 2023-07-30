@@ -65,7 +65,7 @@ def main():
 
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
-    
+     st.write(f'₹ {predictions[0]:,.2f}')
     if new_data_encoded is not None:
         # Make predictions using the loaded model
         predictions = loaded_model.predict(new_data_encoded)
