@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import pickle
+import joblib
 from sklearn.preprocessing import LabelEncoder
 import os
 
@@ -20,7 +20,7 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_file = 'best_model.pkl'
+    model_file = 'best_model.joblib'  # Change the file extension to '.joblib'
 
     # Check if the model file exists in the same directory
     if not os.path.exists(model_file):
@@ -29,9 +29,8 @@ def main():
         return
 
     try:
-        # Load the saved model
-        with open(model_file, 'rb') as file:
-            loaded_model = pickle.load(file)
+        # Load the saved model using joblib
+        loaded_model = joblib.load(model_file)
     except Exception as e:
         st.error(f"Error loading the model: {e}")
         return
@@ -65,16 +64,9 @@ def main():
 
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
-     st.write(f'₹ {predictions[0]:,.2f}')
-    if new_data_encoded is not None:
-        # Make predictions using the loaded model
-        predictions = loaded_model.predict(new_data_encoded)
-
-        # Display the predictions or do further processing
-        st.write('Predictions:', predictions)
-    else:
-        st.write("Please provide new data for prediction.")
+    st.write(f'₹ {predictions[0]:,.2f}')
 
 if __name__ == '__main__':
     main()
+
 
