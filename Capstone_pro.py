@@ -20,7 +20,7 @@ def preprocess_new_data(new_data):
 def main():
     st.title('Car Price Prediction')
 
-    model_file = 'best_model.joblib'  # Change the file extension to '.joblib'
+    model_file = 'subset_data (1).json'  # Change the file extension to '.joblib'
 
     # Check if the model file exists in the same directory
     if not os.path.exists(model_file):
