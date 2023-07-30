@@ -29,7 +29,7 @@ def main():
         return
 
     try:
-        # Load the saved model
+        # Load the saved model using pickle
         with open(model_file, 'rb') as file:
             loaded_model = pickle.load(file)
     except Exception as e:
@@ -66,14 +66,6 @@ def main():
     # Display the predicted selling price
     st.subheader('Predicted Selling Price')
     st.write(f'₹ {predictions[0]:,.2f}')
-    if new_data_encoded is not None:
-        # Make predictions using the loaded model
-        predictions = loaded_model.predict(new_data_encoded)
-
-        # Display the predictions or do further processing
-        st.write('Predictions:', predictions)
-    else:
-        st.write("Please provide new data for prediction.")
 
 if __name__ == '__main__':
     main()
