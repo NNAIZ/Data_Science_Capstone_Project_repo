@@ -9,11 +9,8 @@ def preprocess_new_data(new_data, label_encoder):
     # Apply label encoding to the categorical columns in new_data
     categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
 
-    # Transform the categorical columns using label_encoder
-    transformed_data = label_encoder.transform(new_data[categorical_columns].values.ravel())
-
-    # Replace the categorical columns with the transformed values
-    new_data[categorical_columns] = transformed_data.reshape(new_data[categorical_columns].shape)
+    for column in categorical_columns:
+        new_data[column] = label_encoder.transform(new_data[column].values)
 
     return new_data
 
