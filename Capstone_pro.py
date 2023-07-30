@@ -1,30 +1,42 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import joblib
 from sklearn.preprocessing import LabelEncoder
+import os
 
+# Define a function to preprocess new data
 def preprocess_new_data(new_data):
+    label_encoder = LabelEncoder()
+
     # Apply label encoding to the categorical columns in new_data
     categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
 
     for column in categorical_columns:
-        new_data[column] = label_encoder.transform(new_data[column])
+        new_data[column] = label_encoder.fit_transform(new_data[column])
 
     return new_data
-
-# Load the saved model
-loaded_model = joblib.load('best_model.pkl')
-
-# Load the label encoder used during training
-label_encoder = LabelEncoder()
-with open('label_encoder.pkl', 'rb') as le_file:
-    label_encoder = pickle.load(le_file)
 
 # Define the Streamlit app
 def main():
     st.title('Car Price Prediction')
 
+    model_file = 'best_model.pkl'
+
+    # Check if the model file exists in the same directory
+    if not os.path.exists(model_file):
+        st.error(f"Model file '{model_file}' not found in the same directory. "
+                 f"Please make sure the model file is in the same directory as this script.")
+        return
+
+    try:
+        # Load the saved model
+        with open(model_file, 'rb') as file:
+            loaded_model = pickle.load(file)
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
+        return
+
+    # Create a form for user input
     st.subheader('Enter Car Details')
     name = st.text_input('Car Name', 'Maruti 800 AC')
     year = st.number_input('Year of Manufacture', 2000, 2023, 2007)
@@ -45,16 +57,17 @@ def main():
         'owner': [owner]
     })
 
-    # Preprocess the new data using the label encoder from model_data
+    # Preprocess the new data
     new_data_encoded = preprocess_new_data(new_data)
 
     # Use the loaded model to make predictions on the new data
     predictions = loaded_model.predict(new_data_encoded)
 
     # Display the predicted selling price
-    st.subheader('Predicted Selling Price')
+    st.subheader('Predicted Selling Price')########################
     st.write(f'₹ {predictions[0]:,.2f}')
 
 if __name__ == '__main__':
     main()
+
 
