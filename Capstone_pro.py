@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 from sklearn.preprocessing import LabelEncoder
 import os
@@ -61,12 +60,15 @@ def main():
     # Preprocess the new data
     new_data_encoded = preprocess_new_data(new_data)
 
-    # Use the loaded model to make predictions on the new data
-    predictions = loaded_model.predict(new_data_encoded)
+    if new_data_encoded is not None:
+        # Use the loaded model to make predictions on the new data
+        predictions = loaded_model.predict(new_data_encoded)
 
-    # Display the predicted selling price
-    st.subheader('Predicted Selling Price')
-    st.write(f'₹ {predictions[0]:,.2f}')
+        # Display the predicted selling price
+        st.subheader('Predicted Selling Price')
+        st.write(f'₹ {predictions[0]:,.2f}')
+    else:
+        st.write("Please provide new data for prediction.")
 
 if __name__ == '__main__':
     main()
