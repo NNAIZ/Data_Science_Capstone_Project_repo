@@ -18,7 +18,11 @@ def preprocess_car_data(data):
     return data
 
 # Load the saved model
-loaded_model = joblib.load('best_model.pkl')
+try:
+    loaded_model = joblib.load('best_model.pkl')
+except ValueError:
+    st.error("Error: The model could not be loaded. Please ensure the 'best_model.pkl' file contains the correct trained model.")
+    st.stop()
 
 # Streamlit app
 def main():
@@ -63,5 +67,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
