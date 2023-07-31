@@ -25,7 +25,6 @@ def predict_car_price(features):
     return price_prediction[0]
 
 # Sample data for demonstration purposes
-# Replace this with your actual dataset for model training
 X_train = np.array([[2007, 70000], [2012, 100000]])
 y_train = np.array([5000, 8000])
 
