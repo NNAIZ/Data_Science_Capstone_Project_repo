@@ -42,7 +42,7 @@ def main():
     st.title('Car Price Prediction Model')
 
     # Upload the CSV file
-    uploaded_file = st.file_uploader("/content/CAR DETAILS (1v", type=["csv"])
+    uploaded_file = st.file_uploader("CAR DETAILS (1).csv", type=["csv"])
     if uploaded_file is not None:
         # Read the uploaded CSV file into a DataFrame
         car_df = pd.read_csv(uploaded_file)
