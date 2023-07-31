@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 # Function to train the model and save it
 def train_and_save_model(X_train, y_train):
