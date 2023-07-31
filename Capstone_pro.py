@@ -1,40 +1,78 @@
+# Required libraries
 import streamlit as st
-import pandas as pd
 import pickle
-from sklearn.preprocessing import LabelEncoder
-import os
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
 
-# Define a function to preprocess new data
-def preprocess_new_data(new_data):
-    label_encoder = LabelEncoder()
+# Function to preprocess the car dataset
+def preprocess_car_data(data):
+    # Drop any rows with missing values
+    data.dropna(inplace=True)
 
-    # Apply label encoding to the categorical columns in new_data
-    categorical_columns = ['name', 'fuel', 'seller_type', 'transmission', 'owner']
+    # Convert categorical features to numerical form using one-hot encoding
+    data_encoded = pd.get_dummies(data, drop_first=True)
 
-    for column in categorical_columns:
-        new_data[column] = label_encoder.fit_transform(new_data[column])
+    # Separate the features (X) and target (y)
+    X = data_encoded.drop(columns=['selling_price'])
+    y = data_encoded['selling_price']
 
-    return new_data
+    return X, y
 
-# Define the Streamlit app
+# Function to train the car price prediction model and save it
+def train_and_save_model(X_train, y_train):
+    # Train the model (replace this with your actual model training process)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # Save the trained model using pickle
+    with open('car_price_model.pkl', 'wb') as file:
+        pickle.dump(model, file)
+
+# Function to load the car price prediction model and make predictions
+def predict_car_price(features):
+    # Load the trained model from the pickle file
+    with open('car_price_model.pkl', 'rb') as file:
+        model = pickle.load(file)
+
+    # Make predictions using the loaded model
+    price_prediction = model.predict(features)
+    return price_prediction
+
+# Sample data for demonstration purposes
+# Replace this with your actual dataset for model training
+car_data = {
+    'name': ['Maruti 800 AC', 'Hyundai Verna 1.6 SX'],
+    'year': [2007, 2012],
+    'km_driven': [70000, 100000],
+    'fuel': ['Petrol', 'Diesel'],
+    'seller_type': ['Individual', 'Individual'],
+    'transmission': ['Manual', 'Manual'],
+    'owner': ['First Owner', 'First Owner'],
+    'selling_price': [150000, 500000]
+}
+
+# Create a DataFrame from the sample data
+car_df = pd.DataFrame(car_data)
+
+# Preprocess the car dataset
+X_train, y_train = preprocess_car_data(car_df)
+
+# Train the car price prediction model and save it
+train_and_save_model(X_train, y_train)
+
+# Streamlit app
 def main():
-    st.title('Car Price Prediction')
+    # Title of the web application
+    st.title('Car Price Prediction Model')
 
-    model_file = 'best_model.pkl'
-
-    # Check if the model file exists in the same directory
-    if not os.path.exists(model_file):
-        st.error(f"Model file '{model_file}' not found in the same directory. "
-                 f"Please make sure the model file is in the same directory as this script.")
-        return
-
-    try:
-        # Load the saved model
-        with open(model_file, 'rb') as file:
-            loaded_model = pickle.load(file)
-    except Exception as e:
-        st.error(f"Error loading the model: {e}")
-        return
+    # Display the sample data
+    st.subheader('Sample Data for Model Training')
+    st.write('Features (X_train):')
+    st.write(X_train)
+    st.write('Target (y_train - Car Prices in USD):')
+    st.write(y_train)
 
     # Create a form for user input
     st.subheader('Enter Car Details')
@@ -47,7 +85,7 @@ def main():
     owner = st.selectbox('Owner', ['First Owner', 'Second Owner', 'Third Owner', 'Fourth & Above Owner'])
 
     # Create a DataFrame with the user input
-    new_data = pd.DataFrame({
+    user_data = pd.DataFrame({
         'name': [name],
         'year': [year],
         'km_driven': [km_driven],
@@ -57,17 +95,21 @@ def main():
         'owner': [owner]
     })
 
-    # Preprocess the new data
-    new_data_encoded = preprocess_new_data(new_data)
+    # Preprocess the user data
+    X_user, _ = preprocess_car_data(user_data)
 
-    # Use the loaded model to make predictions on the new data
-    predictions = loaded_model.predict(new_data_encoded)
+    # Make predictions
+    predicted_price = predict_car_price(X_user)
 
-    # Display the predicted selling price
-    st.subheader('Predicted Selling Price')########################
-    st.write(f'₹ {predictions[0]:,.2f}')
+    # Display the predictions
+    st.subheader('Car Price Prediction')
+    st.write('Features (X_new):')
+    st.write(X_user)
+    st.write(f'Predicted Car Price: ${predicted_price[0]:,.2f}')
+
+    # Display success message
+    st.success('Car price prediction completed.')
 
 if __name__ == '__main__':
     main()
-
 
