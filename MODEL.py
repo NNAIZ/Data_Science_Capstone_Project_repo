@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 
 # Create sample data (replace this with your own dataset loading)
-sample_data=""
+sample_data="Sample_Data (1).csv"
 data = pd.DataFrame(sampple_data)  # Load your dataset here
 X = data.drop('target_column', axis=1)  # Adjust the target_column
 y = data['target_column']
